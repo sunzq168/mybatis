@@ -13,8 +13,11 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.sun;
+package com.sun.proxy;
 
-public interface Subject {
-    void hello(String name);
+public class RealSubject implements Subject {
+    @Override
+    public void hello(String name) {
+        System.out.println("hello: " + name);
+    }
 }

@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2020 the original author or authors.
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -13,14 +13,8 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.sun;
+package com.sun.proxy;
 
-public class ServerMain {
-    public static void main(String[] args) {
-        Subject subject = new RealSubject();
-        ProxyHandler proxyHandler = new ProxyHandler(subject);
-        Subject proxy = (Subject) proxyHandler.getProxyInstance();
-        proxy.hello("world");
-    }
+public interface Subject {
+    void hello(String name);
 }
-
