@@ -36,9 +36,15 @@ public abstract class VFS {
   private static final Log log = LogFactory.getLog(VFS.class);
 
   /** The built-in implementations. */
+  /**
+   * 记录了 MyBatis 提供的两个 VFS 实现类
+   */
   public static final Class<?>[] IMPLEMENTATIONS = { JBoss6VFS.class, DefaultVFS.class };
 
   /** The list to which implementations are added by {@link #addImplClass(Class)}. */
+  /**
+   * 记录了用户自定义的 VFS 实现类 。VFS.addImplClass()方法会将指定的 VFS 实现对应的 Class 对象添加到USER_IMPLEMENTATIONS 集合中
+   */
   public static final List<Class<? extends VFS>> USER_IMPLEMENTATIONS = new ArrayList<Class<? extends VFS>>();
 
   /** Singleton instance holder. */

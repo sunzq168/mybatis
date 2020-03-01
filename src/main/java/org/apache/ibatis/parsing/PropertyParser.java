@@ -32,6 +32,7 @@ public class PropertyParser {
    * </p>
    * @since 3.4.2
    */
+  //在 mybatis-config.xml 中<properties>节点下配置是否开启默认值功能的对应配置项
   public static final String KEY_ENABLE_DEFAULT_VALUE = KEY_PREFIX + "enable-default-value";
 
   /**
@@ -41,9 +42,12 @@ public class PropertyParser {
    * </p>
    * @since 3.4.2
    */
+  //配置 占位符与默认值之间的默认分隔符的对应配置项
   public static final String KEY_DEFAULT_VALUE_SEPARATOR = KEY_PREFIX + "default-value-separator";
 
+  //默认情况下，关闭默认值的功能
   private static final String ENABLE_DEFAULT_VALUE = "false";
+  //默认分隔符是冒号
   private static final String DEFAULT_VALUE_SEPARATOR = ":";
 
   private PropertyParser() {
@@ -75,17 +79,22 @@ public class PropertyParser {
     public String handleToken(String content) {
       if (variables != null) {//检测 variables 集合是否为空
         String key = content;
-        if (enableDefaultValue) {
+        if (enableDefaultValue) {//检测是否支持占位符中使用默认值的功能
+          // 查找分隔符
           final int separatorIndex = content.indexOf(defaultValueSeparator);
           String defaultValue = null;
           if (separatorIndex >= 0) {
+            // 获取占位符的名称
             key = content.substring(0, separatorIndex);
+            // 获取默认值
             defaultValue = content.substring(separatorIndex + defaultValueSeparator.length());
           }
           if (defaultValue != null) {
+            //在 variables 集合中查找指定的占位符
             return variables.getProperty(key, defaultValue);
           }
         }
+        // 不支持默认值的功能， 则直接查找vrariables 集合
         if (variables.containsKey(key)) {
           return variables.getProperty(key);
         }

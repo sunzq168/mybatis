@@ -70,6 +70,7 @@ public class ResolverUtil<T> {
     /**
      * Will be called repeatedly with candidate classes. Must return True if a class
      * is to be included in the results, false otherwise.
+     * //参数 type 是待检测的类 ，如果该类符合检测的条件，则 matches ()方法返回 true，否则返回 false
      */
     boolean matches(Class<?> type);
   }
@@ -77,6 +78,7 @@ public class ResolverUtil<T> {
   /**
    * A Test that checks to see if each class is assignable to the provided class. Note
    * that this test will match the parent type itself if it is presented for matching.
+   * //用于检测指定类是否继承了 parent 指定的类
    */
   public static class IsA implements Test {
     private Class<?> parent;
@@ -214,12 +216,15 @@ public class ResolverUtil<T> {
    *        classes, e.g. {@code net.sourceforge.stripes}
    */
   public ResolverUtil<T> find(Test test, String packageName) {
+    // 根据包名获取其对应的路径
     String path = getPackagePath(packageName);
 
     try {
+      //通过 VFS.list()查找 packageName 包下的所有资源
       List<String> children = VFS.getInstance().list(path);
       for (String child : children) {
         if (child.endsWith(".class")) {
+          // 检测该类是否符合 test 条件
           addIfMatching(test, child);
         }
       }

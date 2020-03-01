@@ -36,6 +36,7 @@ public class TypeParameterResolver {
    */
   public static Type resolveFieldType(Field field, Type srcType) {
     Type fieldType = field.getGenericType();
+    //获取字段定义所在的类的 Class 对象
     Class<?> declaringClass = field.getDeclaringClass();
     return resolveType(fieldType, srcType, declaringClass);
   }
@@ -97,7 +98,7 @@ public class TypeParameterResolver {
     //得到原始类型对应的 Class 对象
     Class<?> rawType = (Class<?>) parameterizedType.getRawType();
     Type[] typeArgs = parameterizedType.getActualTypeArguments();
-    // 用于保存解析后的结采
+    // 用于保存解析后的结果
     Type[] args = new Type[typeArgs.length];
     for (int i = 0; i < typeArgs.length; i++) {
       if (typeArgs[i] instanceof TypeVariable) {
@@ -110,6 +111,7 @@ public class TypeParameterResolver {
         args[i] = typeArgs[i];
       }
     }
+    // 将解析结果封装成 TypeParameterResolver 中定义的 ParameterizedType 实现并返回
     return new ParameterizedTypeImpl(rawType, null, args);
   }
 

@@ -24,9 +24,14 @@ import org.apache.ibatis.logging.Log;
  * @author Clinton Begin
  */
 public class Jdk14LoggingImpl implements Log {
-
+  /**
+   * 底层封装的java.util.logging.Logger对象
+   */
   private final Logger log;
 
+  /**
+   * 初始化 java.util.logging.Logger对象
+   */
   public Jdk14LoggingImpl(String clazz) {
     log = Logger.getLogger(clazz);
   }
