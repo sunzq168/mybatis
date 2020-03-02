@@ -27,13 +27,19 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * MapperRegistry是 Mapper 接口及其对应的代理对象工厂的注册中心。
  * @author Clinton Begin
  * @author Eduardo Macarron
  * @author Lasse Voss
  */
 public class MapperRegistry {
-
+  /**
+   * Configuration 对象，MyBatis 全局唯一的配置对象，其中包含了所有配置信息
+   */
   private final Configuration config;
+  /**
+   * 记录了 Mapper 接口与对应 MapperProxyFactory 之间的关系
+   */
   private final Map<Class<?>, MapperProxyFactory<?>> knownMappers = new HashMap<Class<?>, MapperProxyFactory<?>>();
 
   public MapperRegistry(Configuration config) {
@@ -47,6 +53,9 @@ public class MapperRegistry {
       throw new BindingException("Type " + type + " is not known to the MapperRegistry.");
     }
     try {
+      /**
+       * 创建实现了 type接口的代理对象
+       */
       return mapperProxyFactory.newInstance(sqlSession);
     } catch (Exception e) {
       throw new BindingException("Error getting mapper instance. Cause: " + e, e);

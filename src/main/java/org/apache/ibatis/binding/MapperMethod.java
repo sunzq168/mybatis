@@ -33,7 +33,9 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Clinton Begin
@@ -41,8 +43,13 @@ import java.util.*;
  * @author Lasse Voss
  */
 public class MapperMethod {
-
+  /**
+   * 记录了 SQL语句的名称和类型
+   */
   private final SqlCommand command;
+  /**
+   * Mapper 接口中对应方法的相关信息
+   */
   private final MethodSignature method;
 
   public MapperMethod(Class<?> mapperInterface, Method method, Configuration config) {
@@ -52,6 +59,7 @@ public class MapperMethod {
 
   public Object execute(SqlSession sqlSession, Object[] args) {
     Object result;
+    //根据 SQL 语句的类型调用 SqlSession 对应的方法
     switch (command.getType()) {
       case INSERT: {
       Object param = method.convertArgsToSqlCommandParam(args);
@@ -209,8 +217,13 @@ public class MapperMethod {
   }
 
   public static class SqlCommand {
-
+    /**
+     * name字段记录了 SQL 语句的名称
+     */
     private final String name;
+    /**
+     * 记录了 SQL语句的类型。
+     */
     private final SqlCommandType type;
 
     public SqlCommand(Configuration configuration, Class<?> mapperInterface, Method method) {
@@ -245,7 +258,9 @@ public class MapperMethod {
 
     private MappedStatement resolveMappedStatement(Class<?> mapperInterface, String methodName,
         Class<?> declaringClass, Configuration configuration) {
+      //SQL 语句的名称是由 Mapper 接口的名称与对应的方法名称组成的
       String statementId = mapperInterface.getName() + "." + methodName;
+      // 检测是否有该名称的 SQL 语句
       if (configuration.hasStatement(statementId)) {
         return configuration.getMappedStatement(statementId);
       } else if (mapperInterface.equals(declaringClass)) {
@@ -265,15 +280,23 @@ public class MapperMethod {
   }
 
   public static class MethodSignature {
-
+    //返回值类型是否为 Collection 类型或是数组类型
     private final boolean returnsMany;
+    //返回值类型是否为 Map 类型
     private final boolean returnsMap;
+    //返回值类型是否为 void
     private final boolean returnsVoid;
+    // 返回值是否为 Cursor 类型
     private final boolean returnsCursor;
+    // 返回值类型
     private final Class<?> returnType;
+    //如果返回值类型是 Map，则该字段记录了作为 key 的列名
     private final String mapKey;
+    // 用来标记该方法参数列表中 ResultHandler 类型参数的位置
     private final Integer resultHandlerIndex;
+    //用来标记该方法参数列表中 RowBounds 类型参数的位置
     private final Integer rowBoundsIndex;
+    //该方法对应的 ParamNameResolver对象
     private final ParamNameResolver paramNameResolver;
 
     public MethodSignature(Configuration configuration, Class<?> mapperInterface, Method method) {
@@ -339,6 +362,7 @@ public class MapperMethod {
       return returnsCursor;
     }
 
+    //查找指定类型的参数在参数列表中的位置
     private Integer getUniqueParamIndex(Method method, Class<?> paramType) {
       Integer index = null;
       final Class<?>[] argTypes = method.getParameterTypes();
