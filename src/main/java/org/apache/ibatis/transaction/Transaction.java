@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2016 the original author or authors.
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.sql.SQLException;
 public interface Transaction {
 
   /**
+   * 获取对应的数据库连接对象
    * Retrieve inner database connection
    * @return DataBase connection
    * @throws SQLException
@@ -34,24 +35,28 @@ public interface Transaction {
   Connection getConnection() throws SQLException;
 
   /**
+   * 提交事务
    * Commit inner database connection.
    * @throws SQLException
    */
   void commit() throws SQLException;
 
   /**
+   * 回滚事务
    * Rollback inner database connection.
    * @throws SQLException
    */
   void rollback() throws SQLException;
 
   /**
+   * 关闭数据库连接
    * Close inner database connection.
    * @throws SQLException
    */
   void close() throws SQLException;
 
   /**
+   * 获取事务超时时间
    * Get transaction timeout if set
    * @throws SQLException
    */

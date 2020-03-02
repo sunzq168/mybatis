@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2017 the original author or authors.
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -31,7 +31,9 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
  */
 public class MetaClass {
 
+  // ReflectorFactory 对象，用于缓存 Reflector 对象
   private final ReflectorFactory reflectorFactory;
+  //在创建 MetaClass 时会指定一个类，该 Reflector 对象会用于记录该类相关 的元信息
   private final Reflector reflector;
 
   private MetaClass(Class<?> type, ReflectorFactory reflectorFactory) {
@@ -175,7 +177,9 @@ public class MetaClass {
       if (propertyName != null) {
         builder.append(propertyName);
         builder.append(".");
+        //为该属性创建对应的 MetaClass 对象
         MetaClass metaProp = metaClassForProperty(propertyName);
+        //递归解析 PropertyTokenizer.children 字段，并将解析结果添加到 builder 中保存
         metaProp.buildProperty(prop.getChildren(), builder);
       }
     } else {

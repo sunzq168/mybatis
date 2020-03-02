@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2015 the original author or authors.
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -36,9 +36,17 @@ import org.apache.ibatis.io.Resources;
  * @author Eduardo Macarron
  */
 public class UnpooledDataSource implements DataSource {
-  
+  /**
+   * 加载 Driver 类的类加载器
+   */
   private ClassLoader driverClassLoader;
+  /**
+   * 数据库连接驱动的相关配置
+   */
   private Properties driverProperties;
+  /**
+   * 缓存所有已注册的数据库连接驱动
+   */
   private static Map<String, Driver> registeredDrivers = new ConcurrentHashMap<String, Driver>();
 
   private String driver;
@@ -197,8 +205,11 @@ public class UnpooledDataSource implements DataSource {
   }
 
   private Connection doGetConnection(Properties properties) throws SQLException {
+    // 初始化数据库驱动
     initializeDriver();
+    // 创建真正的数据库连接
     Connection connection = DriverManager.getConnection(url, properties);
+    // 配置数据库连接的 autoCommit 和隔离级别
     configureConnection(connection);
     return connection;
   }

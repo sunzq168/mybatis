@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2016 the original author or authors.
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -27,10 +27,16 @@ public final class LogFactory {
    * Marker to be used by logging implementations that support markers
    */
   public static final String MARKER = "MYBATIS";
-
+  /**
+   * 记录当前使用的第三方日志组件所对应的适配器的构造方法
+   */
   private static Constructor<? extends Log> logConstructor;
 
+
   static {
+    // 下面会针对每种日志组件调用 tryimplementation()方法进行尝试加载，具体调用顺序是:
+    // useSlf4jLogging() --> useCommonsLogging() --> useLog4J2Logging() -->
+    // useLog4JLogging()--> useJdkLogging() --> useNoLogging()
     tryImplementation(new Runnable() {
       @Override
       public void run() {
@@ -129,7 +135,9 @@ public final class LogFactory {
 
   private static void setImplementation(Class<? extends Log> implClass) {
     try {
+      // 获取指定适配器的构造方法
       Constructor<? extends Log> candidate = implClass.getConstructor(String.class);
+      // 实例化适配器
       Log log = candidate.newInstance(LogFactory.class.getName());
       if (log.isDebugEnabled()) {
         log.debug("Logging initialized using '" + implClass + "' adapter.");

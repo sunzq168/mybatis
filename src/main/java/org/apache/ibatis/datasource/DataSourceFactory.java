@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2015 the original author or authors.
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -23,8 +23,16 @@ import javax.sql.DataSource;
  */
 public interface DataSourceFactory {
 
+  /**
+   * 设置 DataSource 的相关属性，一般紧跟在初始化完成之后
+   * @param props
+   */
   void setProperties(Properties props);
 
+  /**
+   * 获取 DataSource 对象
+   * @return
+   */
   DataSource getDataSource();
 
 }

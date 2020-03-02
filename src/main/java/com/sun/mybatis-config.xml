@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <properties>
+        <property name="driver" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/test?useUnicode=true"/>
+        <property name="username" value="root"/>
+        <property name="password" value="root"/>
+    </properties>
+<!--    <settings>-->
+<!--        <setting name="" value=""/>-->
+<!--    </settings>-->
+    <typeAliases>
+        <typeAlias type="com.sun.model.Student" alias="Student"></typeAlias>
+    </typeAliases>
+
+<!--    <plugins>-->
+<!--        <plugin interceptor="com.sun.ExamplePlugin">-->
+<!--            <property name="someProperty" value="100"/>-->
+<!--        </plugin>-->
+<!--    </plugins>-->
+
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <mapper resource="com/sun/mapper/StudentMapper.xml"/>
+    </mappers>
+</configuration>

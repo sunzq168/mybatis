@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2017 the original author or authors.
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -36,21 +36,35 @@ import org.apache.ibatis.reflection.ArrayUtil;
  * @author Eduardo Macarron
  */
 public abstract class BaseJdbcLogger {
-  //记录了 PreparedStatement 接口中定义的常用的 set*()方法
+  /**
+   * 记录了 PreparedStatement 接口中定义的常用的 set*()方法
+   */
   protected static final Set<String> SET_METHODS = new HashSet<String>();
-  // 记录了 Statement 接口和 PreparedStatement 接口中与执行 SQL 语句相关的方法
+  /**
+   * 记录了 Statement 接口和 PreparedStatement 接口中与执行 SQL 语句相关的方法
+   */
   protected static final Set<String> EXECUTE_METHODS = new HashSet<String>();
 
-  //记录了 PreparedStatement.set*()方法设置的键位对
+  /**
+   * 记录了 PreparedStatement.set*()方法设置的键值对
+   */
   private final Map<Object, Object> columnMap = new HashMap<Object, Object>();
-  //记录了 PreparedStatement . set*()方法设置的 key 位
+  /**
+   * 记录了 PreparedStatement.set*()方法设置的 key 值
+   */
   private final List<Object> columnNames = new ArrayList<Object>();
-  //记录了 PreparedStatement . set*()方法设置的 value 值
+  /**
+   * 记录了 PreparedStatement.set*()方法设置的 value 值
+   */
   private final List<Object> columnValues = new ArrayList<Object>();
 
-  // 用 于输 出日 志的 Log 对象
+  /**
+   *  用于输出日志的 Log 对象
+   */
   protected Log statementLog;
-  // 记录了 SQL 的层数,用于格式化输出SQL
+  /**
+   * 记录了 SQL 的层数,用于格式化输出SQL
+   */
   protected int queryStack;
 
   /*

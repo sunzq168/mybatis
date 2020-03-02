@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2018 the original author or authors.
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -100,8 +100,12 @@ public class Reflector {
   }
 
   private void addGetMethods(Class<?> cls) {
+    // conflictingGetters 集合的 key为属性名称， value是相应 getter方法集合，
+    // 因为子类可能覆盖父类的 getter 方法，所以同一属性名称可能会存在 多个 getter 方法
     Map<String, List<Method>> conflictingGetters = new HashMap<String, List<Method>>();
+    // 步骤 l: 获取指定类以及其父类和接口中定义的方法
     Method[] methods = getClassMethods(cls);
+    //步骤 2:按照 JavaBean 规范查找 getter 方 法，并记 录到 conflictingGetters 集合中
     for (Method method : methods) {
       if (method.getParameterTypes().length > 0) {
         continue;
@@ -109,10 +113,13 @@ public class Reflector {
       String name = method.getName();
       if ((name.startsWith("get") && name.length() > 3)
           || (name.startsWith("is") && name.length() > 2)) {
+        //按照 JavaBean 的规范，获取对应 的属性名称
         name = PropertyNamer.methodToProperty(name);
+        //将属性名与 getter 方法的对反关系记录圭1] conflictingGetters 集合中
         addMethodConflict(conflictingGetters, name, method);
       }
     }
+    //步骤 3:对 conflictingGetters 集合进行处理
     resolveGetterConflicts(conflictingGetters);
   }
 

@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2017 the original author or authors.
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -24,9 +24,14 @@ import org.apache.ibatis.logging.Log;
  * @author Clinton Begin
  */
 public class Jdk14LoggingImpl implements Log {
-
+  /**
+   * 底层封装的java.util.logging.Logger对象
+   */
   private final Logger log;
 
+  /**
+   * 初始化 java.util.logging.Logger对象
+   */
   public Jdk14LoggingImpl(String clazz) {
     log = Logger.getLogger(clazz);
   }
