@@ -76,6 +76,7 @@ public class XMLStatementBuilder extends BaseBuilder {
     StatementType statementType = StatementType.valueOf(context.getStringAttribute("statementType", StatementType.PREPARED.toString()));
     ResultSetType resultSetTypeEnum = resolveResultSetType(resultSetType);
 
+    // 根据 SQL 节点的名称决定其 SqlCommandType
     String nodeName = context.getNode().getNodeName();
     SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
     boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
@@ -84,12 +85,13 @@ public class XMLStatementBuilder extends BaseBuilder {
     boolean resultOrdered = context.getBooleanAttribute("resultOrdered", false);
 
     // Include Fragments before parsing
+    //在解析 SQL 语句 之前，先处理其中的 <include>节点
     XMLIncludeTransformer includeParser = new XMLIncludeTransformer(configuration, builderAssistant);
     includeParser.applyIncludes(context.getNode());
 
     // Parse selectKey after includes and remove them.
     processSelectKeyNodes(id, parameterTypeClass, langDriver);
-    
+
     // Parse the SQL (pre: <selectKey> and <include> were parsed and removed)
     SqlSource sqlSource = langDriver.createSqlSource(configuration, context, parameterTypeClass);
     String resultSets = context.getStringAttribute("resultSets");

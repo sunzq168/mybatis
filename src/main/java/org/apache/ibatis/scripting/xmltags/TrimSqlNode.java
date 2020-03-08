@@ -28,11 +28,25 @@ import org.apache.ibatis.session.Configuration;
  * @author Clinton Begin
  */
 public class TrimSqlNode implements SqlNode {
-
+  /**
+   * 该<trim>节点的子节点
+   */
   private final SqlNode contents;
+  /**
+   * 记录了前缀字符串(为<trim>节点包袤的 SQL语句添加的前缀)
+   */
   private final String prefix;
+  /**
+   * 记录了后缀字符串(为<trim>节点包袤的 SQL语句添加的后缀)
+   */
   private final String suffix;
+  /**
+   * 如果<trim>节点包袤的 SQL 语句是空语句(经常出现在 if 判断为否的情况下)，删除指定的前缀，如 where
+   */
   private final List<String> prefixesToOverride;
+  /**
+   * 如果<trim>包袤的 SQL 语句是空语句(经常出现在 if 判断为否的情况下)，删除指定的后缀，如逗号
+   */
   private final List<String> suffixesToOverride;
   private final Configuration configuration;
 
@@ -51,8 +65,11 @@ public class TrimSqlNode implements SqlNode {
 
   @Override
   public boolean apply(DynamicContext context) {
+    //创建 FilteredDynamicContext 对象，其中封装了 DynamicContext
     FilteredDynamicContext filteredDynamicContext = new FilteredDynamicContext(context);
+    //调用子节点的 apply()方法进行解析
     boolean result = contents.apply(filteredDynamicContext);
+    //使用FilteredDynamicContext.applyAll()方法处理前级和后缀
     filteredDynamicContext.applyAll();
     return result;
   }
@@ -71,6 +88,7 @@ public class TrimSqlNode implements SqlNode {
 
   private class FilteredDynamicContext extends DynamicContext {
     private DynamicContext delegate;
+    //是否已经处理过前级和后缀，初始值都为 false
     private boolean prefixApplied;
     private boolean suffixApplied;
     private StringBuilder sqlBuffer;
@@ -84,6 +102,7 @@ public class TrimSqlNode implements SqlNode {
     }
 
     public void applyAll() {
+      //获取子节点解析后的结果，并全部转换为大写
       sqlBuffer = new StringBuilder(sqlBuffer.toString().trim());
       String trimmedUppercaseSql = sqlBuffer.toString().toUpperCase(Locale.ENGLISH);
       if (trimmedUppercaseSql.length() > 0) {

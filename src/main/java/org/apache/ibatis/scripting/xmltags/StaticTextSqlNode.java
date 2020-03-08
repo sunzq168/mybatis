@@ -19,6 +19,9 @@ package org.apache.ibatis.scripting.xmltags;
  * @author Clinton Begin
  */
 public class StaticTextSqlNode implements SqlNode {
+  /**
+   * 使用text字段记录了对应的非动态 SQL 语句节点
+   */
   private final String text;
 
   public StaticTextSqlNode(String text) {

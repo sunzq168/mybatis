@@ -88,14 +88,19 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   public void parse() {
+    //判断是否已经加载过该映射文件
     if (!configuration.isResourceLoaded(resource)) {
       configurationElement(parser.evalNode("/mapper"));
+      //将resource添加到Configuration.loadedResources 集合中保存,它是HashSet<String>类型的集合，其中记录了已经加载过的映射文件
       configuration.addLoadedResource(resource);
+      //注册 Mapper 接口
       bindMapperForNamespace();
     }
-
+    //处理 configurationElement()方法中解析失败的<resultMap>节点
     parsePendingResultMaps();
+    //处理 configurationElement()方法中解析失败的<cache-ref>节点
     parsePendingCacheRefs();
+    //处理 configurationElement()方法中解析失败的 SQL 语句节点
     parsePendingStatements();
   }
 
@@ -109,12 +114,19 @@ public class XMLMapperBuilder extends BaseBuilder {
       if (namespace == null || namespace.equals("")) {
         throw new BuilderException("Mapper's namespace cannot be empty");
       }
+      //设置 MapperBuilderAssistant 的 currentNamespace 字段，记录当前命名空间
       builderAssistant.setCurrentNamespace(namespace);
+      //解析<cache-ref>节点
       cacheRefElement(context.evalNode("cache-ref"));
+      //解析<cache>节点
       cacheElement(context.evalNode("cache"));
+      //解析<parameterMap>节点(该节点已废弃，不再推荐使用)
       parameterMapElement(context.evalNodes("/mapper/parameterMap"));
+      //解析<resultMap>节点
       resultMapElements(context.evalNodes("/mapper/resultMap"));
+      //解析<sql>节点
       sqlElement(context.evalNodes("/mapper/sql"));
+      //解析<select>、<insert>、<update>、<delete>等 SQL 节点
       buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
     } catch (Exception e) {
       throw new BuilderException("Error parsing Mapper XML. The XML location is '" + resource + "'. Cause: " + e, e);
@@ -189,6 +201,7 @@ public class XMLMapperBuilder extends BaseBuilder {
       configuration.addCacheRef(builderAssistant.getCurrentNamespace(), context.getStringAttribute("namespace"));
       CacheRefResolver cacheRefResolver = new CacheRefResolver(builderAssistant, context.getStringAttribute("namespace"));
       try {
+        //解析 Cache 引用，该过程主要是设置 MapperBuilderAssistant 中的currentCache 和 unresolvedCacheRef 字段
         cacheRefResolver.resolveCacheRef();
       } catch (IncompleteElementException e) {
         configuration.addIncompleteCacheRef(cacheRefResolver);
@@ -254,12 +267,15 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private ResultMap resultMapElement(XNode resultMapNode, List<ResultMapping> additionalResultMappings) throws Exception {
     ErrorContext.instance().activity("processing " + resultMapNode.getValueBasedIdentifier());
+    //获取< resultMap>的 id 属性，默认值会拼装所有父节点的 id 或 value 或 Property 属性值，
     String id = resultMapNode.getStringAttribute("id",
         resultMapNode.getValueBasedIdentifier());
+    //获取<resultMap>节点的 type 属性，表示结采集将被映射成 type 指定类型的对象，注意其默认值
     String type = resultMapNode.getStringAttribute("type",
         resultMapNode.getStringAttribute("ofType",
             resultMapNode.getStringAttribute("resultType",
                 resultMapNode.getStringAttribute("javaType"))));
+    //获取<resultMap>节点的 extends属性，该属性指定了该<resultMap>节点的继承关系
     String extend = resultMapNode.getStringAttribute("extends");
     Boolean autoMapping = resultMapNode.getBooleanAttribute("autoMapping");
     Class<?> typeClass = resolveClass(type);

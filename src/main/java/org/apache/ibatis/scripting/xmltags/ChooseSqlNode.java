@@ -21,7 +21,13 @@ import java.util.List;
  * @author Clinton Begin
  */
 public class ChooseSqlNode implements SqlNode {
+  /**
+   * <otherwise>节点对应的 SqlNode
+   */
   private final SqlNode defaultSqlNode;
+  /**
+   *  <when>节点对应的 IfSqlNode 集合
+   */
   private final List<SqlNode> ifSqlNodes;
 
   public ChooseSqlNode(List<SqlNode> ifSqlNodes, SqlNode defaultSqlNode) {

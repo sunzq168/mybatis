@@ -1,4 +1,4 @@
-package com.sun;
+package com.sun.plugin;
 
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.MappedStatement;

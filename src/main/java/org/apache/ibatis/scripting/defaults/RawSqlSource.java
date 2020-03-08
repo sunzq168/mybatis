@@ -26,6 +26,7 @@ import org.apache.ibatis.scripting.xmltags.SqlNode;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * RawSqlSource 负责处理静态语句，最终会将处理后的 SQL 语句封装成 StaticSqlSource 返回。
  * Static SqlSource. It is faster than {@link DynamicSqlSource} because mappings are 
  * calculated during startup.
  * 

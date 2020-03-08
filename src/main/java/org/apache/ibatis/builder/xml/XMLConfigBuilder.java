@@ -48,14 +48,26 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 
 /**
+ * 主要负责解析 mybatis-config.xml配置文件
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
 public class XMLConfigBuilder extends BaseBuilder {
-
+  /**
+   * 标识是否已经解析过mybat工s-config.xml 配置文件,mybat工s-config.xml 配置文件只需要解析一次
+   */
   private boolean parsed;
+  /**
+   * 用于解析 mybatis-config.xml 配置文件的 XPathParser 对象
+   */
   private final XPathParser parser;
+  /**
+   * 标识<environment>配置的名称，默认读取<environment>标签的 default 属性
+   */
   private String environment;
+  /**
+   * ReflectorFactory 负责创建和缓存 Reflector 对象
+   */
   private final ReflectorFactory localReflectorFactory = new DefaultReflectorFactory();
 
   public XMLConfigBuilder(Reader reader) {
@@ -128,7 +140,9 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
     Properties props = context.getChildrenAsProperties();
     // Check that all settings are known to the configuration class
+    // 创建 Configurat工on 对应的 MetaClass 对象
     MetaClass metaConfig = MetaClass.forClass(Configuration.class, localReflectorFactory);
+    //检测 Configuration 中是否定义了 key 指定属性相应的 setter 方法
     for (Object key : props.keySet()) {
       if (!metaConfig.hasSetter(String.valueOf(key))) {
         throw new BuilderException("The setting " + key + " is not known.  Make sure you spelled it correctly (case sensitive).");
@@ -215,7 +229,9 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   private void propertiesElement(XNode context) throws Exception {
     if (context != null) {
+      //解析<properties>的子节点(<property>标签)的 name 和 value 属性，并记录到 Properties 中
       Properties defaults = context.getChildrenAsProperties();
+      //解析<properties>的 resource 和 url 属性 ， 这两个属性用于确定 properties 配置文件的位置,这两个属性不能同时配置
       String resource = context.getStringAttribute("resource");
       String url = context.getStringAttribute("url");
       if (resource != null && url != null) {
@@ -276,6 +292,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       for (XNode child : context.getChildren()) {
         String id = child.getStringAttribute("id");
         if (isSpecifiedEnvironment(id)) {
+          //创建 TransactionFactory，具体实现是先通过 TypeAliasRegistry 解析别名之后， //实古H匕 TransactionFactory
           TransactionFactory txFactory = transactionManagerElement(child.evalNode("transactionManager"));
           DataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));
           DataSource dataSource = dsFactory.getDataSource();
@@ -361,11 +378,14 @@ public class XMLConfigBuilder extends BaseBuilder {
       for (XNode child : parent.getChildren()) {
         if ("package".equals(child.getName())) {
           String mapperPackage = child.getStringAttribute("name");
+          // 扫描指定的包，并向 MapperRegistry 注册 Mapper 接口
           configuration.addMappers(mapperPackage);
         } else {
+          //获取<mapper>节点的 resource、 url、 class 属性，这三个属性互斥
           String resource = child.getStringAttribute("resource");
           String url = child.getStringAttribute("url");
           String mapperClass = child.getStringAttribute("class");
+
           if (resource != null && url == null && mapperClass == null) {
             ErrorContext.instance().resource(resource);
             InputStream inputStream = Resources.getResourceAsStream(resource);

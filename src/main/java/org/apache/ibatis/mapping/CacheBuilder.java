@@ -38,13 +38,37 @@ import org.apache.ibatis.reflection.SystemMetaObject;
  * @author Clinton Begin
  */
 public class CacheBuilder {
+  /**
+   * Cache 对象的唯一标识，一般情况下对应映射文件中的配置 namespace
+   */
   private final String id;
+  /**
+   * Cache 接 口的真正实现类，默认位是前面介绍的PerpetualCache
+   */
   private Class<? extends Cache> implementation;
+  /**
+   * 装饰器集合，默认只包含LruCache.class
+   */
   private final List<Class<? extends Cache>> decorators;
+  /**
+   * Cache 大小
+   */
   private Integer size;
+  /**
+   * 清理时间周期
+   */
   private Long clearInterval;
+  /**
+   * 是否可读写
+   */
   private boolean readWrite;
+  /**
+   * 其他配置信息
+   */
   private Properties properties;
+  /**
+   * 是否阻塞
+   */
   private boolean blocking;
 
   public CacheBuilder(String id) {
@@ -90,15 +114,22 @@ public class CacheBuilder {
   }
 
   public Cache build() {
+    //如果implementation 字段和 decorators 集合为空，则为其设立默认值，implementation 默认值是 PerpetualCache.class, decorators集合，默认只包含LruCache.class
     setDefaultImplementations();
+    //根据implementation 指定的类型,通过反射获取参数为 String 类型的构造方法，并通过该构造方法创建 Cache 对象
     Cache cache = newBaseCacheInstance(implementation, id);
+    //根据<cache>节点下自己置的<property>信息，初始化 Cache 对象
     setCacheProperties(cache);
     // issue #352, do not apply decorators to custom caches
+    //检测 cache 对象的类型，如果是PerpetualCache 类型，则为其添加 decorators 集合中的装饰器 ;
+    // 如果是自定义类型的 Cache 接口实现，则不添加 decorators 集合中的装饰器
     if (PerpetualCache.class.equals(cache.getClass())) {
       for (Class<? extends Cache> decorator : decorators) {
+        //通过反射获取参数为 Cache 类型的构造方法，并通过该构造方法创建装饰器
         cache = newCacheDecoratorInstance(decorator, cache);
         setCacheProperties(cache);
       }
+      //添加 MyBatis 中提供的标准装饰器
       cache = setStandardDecorators(cache);
     } else if (!LoggingCache.class.isAssignableFrom(cache.getClass())) {
       cache = new LoggingCache(cache);

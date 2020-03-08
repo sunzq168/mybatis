@@ -27,6 +27,7 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * DynamicContext 主要用于记录解析动态 SQL 语句之后产生的 SQL 语句片段，可以认为它是一个用于记录动态 SQL 语句解析结果的容器。
  * @author Clinton Begin
  */
 public class DynamicContext {
@@ -38,10 +39,21 @@ public class DynamicContext {
     OgnlRuntime.setPropertyAccessor(ContextMap.class, new ContextAccessor());
   }
 
+  /**
+   * 参数上下文
+   */
   private final ContextMap bindings;
+  /**
+   * 在 SqlNode 解析动态 SQL 时，会将解析后的 SQL 语句片段添加到该属性中保存，最终拼凑出一条完成的 SQL 语句
+   */
   private final StringBuilder sqlBuilder = new StringBuilder();
   private int uniqueNumber = 0;
 
+  /**
+   * parameterObject，它是运行时用户传入的参数， 其中包含了后续用于替换“#{}”占位符的实参。
+   * @param configuration
+   * @param parameterObject
+   */
   public DynamicContext(Configuration configuration, Object parameterObject) {
     if (parameterObject != null && !(parameterObject instanceof Map)) {
       MetaObject metaObject = configuration.newMetaObject(parameterObject);
@@ -85,10 +97,11 @@ public class DynamicContext {
     @Override
     public Object get(Object key) {
       String strKey = (String) key;
+      //如果 ContextMap 中已经包含了该 key，则直接返回
       if (super.containsKey(strKey)) {
         return super.get(strKey);
       }
-
+      //从运行时参数中查找对应属性
       if (parameterMetaObject != null) {
         // issue #61 do not modify the context when reading
         return parameterMetaObject.getValue(strKey);

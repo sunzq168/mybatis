@@ -9,18 +9,44 @@
         <property name="username" value="root"/>
         <property name="password" value="root"/>
     </properties>
-<!--    <settings>-->
-<!--        <setting name="" value=""/>-->
-<!--    </settings>-->
+    <!--完整的settings-->
+    <settings>
+        <setting name="cacheEnabled" value="true"/>
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <setting name="multipleResultSetsEnabled" value="true"/>
+        <setting name="useColumnLabel" value="true"/>
+        <setting name="useGeneratedKeys" value="false"/>
+        <setting name="autoMappingBehavior" value="PARTIAL"/>
+        <setting name="autoMappingUnknownColumnBehavior" value="WARNING"/>
+        <setting name="defaultExecutorType" value="SIMPLE"/>
+        <setting name="defaultStatementTimeout" value="25"/>
+        <setting name="defaultFetchSize" value="100"/>
+        <setting name="safeRowBoundsEnabled" value="false"/>
+        <setting name="mapUnderscoreToCamelCase" value="false"/>
+        <setting name="localCacheScope" value="SESSION"/>
+        <setting name="jdbcTypeForNull" value="OTHER"/>
+        <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString"/>
+    </settings>
+
     <typeAliases>
-        <typeAlias type="com.sun.model.Student" alias="Student"></typeAlias>
+        <typeAlias type="com.sun.model.Student" alias="Student"/>
     </typeAliases>
 
-<!--    <plugins>-->
-<!--        <plugin interceptor="com.sun.ExamplePlugin">-->
-<!--            <property name="someProperty" value="100"/>-->
-<!--        </plugin>-->
-<!--    </plugins>-->
+    <typeHandlers>
+        <typeHandler handler="com.sun.typeHandler.ExampleTypeHandler"/>
+    </typeHandlers>
+
+    <objectFactory type="com.sun.objectFactory.ExampleObjectFactory">
+        <property name="someProperty" value="100"/>
+    </objectFactory>
+
+    <plugins>
+        <plugin interceptor="com.sun.plugin.ExamplePlugin">
+            <property name="someProperty" value="100"/>
+        </plugin>
+    </plugins>
+
+
 
     <environments default="development">
         <environment id="development">
@@ -34,7 +60,16 @@
         </environment>
     </environments>
 
+    <databaseIdProvider type="DB_VENDOR">
+        <property name="MySQL" value="mysql"/>
+    </databaseIdProvider>
+
     <mappers>
-        <mapper resource="com/sun/mapper/StudentMapper.xml"/>
+        <!--使用package方式配置时,mapper类和对应点xxxMapper.xml要在同一个包下面,否则加载不到xxxMapper.xml-->
+        <package name="com.sun.mapper"/>
+<!--        <mapper resource="com/sun/mapper/StudentMapper.xml"/>-->
     </mappers>
+
+
+
 </configuration>

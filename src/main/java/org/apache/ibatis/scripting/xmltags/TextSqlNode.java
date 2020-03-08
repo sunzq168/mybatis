@@ -23,6 +23,7 @@ import org.apache.ibatis.scripting.ScriptingException;
 import org.apache.ibatis.type.SimpleTypeRegistry;
 
 /**
+ * TextSq!Node 表示的是包含“${}”占位符的动态 SQL 节点
  * @author Clinton Begin
  */
 public class TextSqlNode implements SqlNode {
@@ -45,6 +46,11 @@ public class TextSqlNode implements SqlNode {
     return checker.isDynamic();
   }
 
+  /**
+   * apply()方法会使用 GenericTokenParser 解析“${}”占位符，并直接替换成用户给定的实际参数值
+   * @param context
+   * @return
+   */
   @Override
   public boolean apply(DynamicContext context) {
     GenericTokenParser parser = createParser(new BindingTokenParser(context, injectionFilter));
@@ -68,6 +74,7 @@ public class TextSqlNode implements SqlNode {
 
     @Override
     public String handleToken(String content) {
+      //获取用户提供的实参
       Object parameter = context.getBindings().get("_parameter");
       if (parameter == null) {
         context.getBindings().put("value", null);
