@@ -15,15 +15,6 @@
  */
 package org.apache.ibatis.session.defaults;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.ibatis.binding.BindingException;
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.exceptions.ExceptionFactory;
@@ -39,6 +30,11 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.*;
+
 /**
  *
  * The default implementation for {@link SqlSession}.
@@ -50,9 +46,17 @@ public class DefaultSqlSession implements SqlSession {
 
   private final Configuration configuration;
   private final Executor executor;
-
+  /**
+   * 是否自动提交事务
+   */
   private final boolean autoCommit;
+  /**
+   * 当前缓存中是否有脏数据
+   */
   private boolean dirty;
+  /**
+   * 为防止用户忘记关闭已打开的游标对象，会通过 cursorList 字段记录由该 SqlSession 对象生成的游标对象，在 DefaultSqlSession.close ()方法中会统一关闭这些游标对象
+   */
   private List<Cursor<?>> cursorList;
 
   public DefaultSqlSession(Configuration configuration, Executor executor, boolean autoCommit) {

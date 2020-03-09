@@ -15,10 +15,6 @@
  */
 package org.apache.ibatis.executor.statement;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.ExecutorException;
@@ -33,7 +29,12 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 /**
+ * 只提供了一些参数绑定相关的方法 ，并没有实现操作数据库的方法。
  * @author Clinton Begin
  */
 public abstract class BaseStatementHandler implements StatementHandler {
@@ -41,13 +42,29 @@ public abstract class BaseStatementHandler implements StatementHandler {
   protected final Configuration configuration;
   protected final ObjectFactory objectFactory;
   protected final TypeHandlerRegistry typeHandlerRegistry;
+  /**
+   * 记录使用的 ResultSetHandler 对象，它的主要功能是将结果集映射成结果对象
+   */
   protected final ResultSetHandler resultSetHandler;
+  /**
+   * 记录使用的ParameterHandler 对象,ParameterHandler 的主要功能是为 SQL 语句绑定实参,也就是使用传入的实参替换 SQL 语句的中’?”占位符
+   */
   protected final ParameterHandler parameterHandler;
-
+  /**
+   * 记录 SQL 语句对应的 Executor 对象
+   */
   protected final Executor executor;
+  /**
+   * 记录 SQL 语句对应的 MappedStatement对象
+   */
   protected final MappedStatement mappedStatement;
+  /**
+   * RowBounds 记录了用户设置的 offset 和 limit，用于在结果集中定位映射的起始位置和结束位置
+   */
   protected final RowBounds rowBounds;
-
+  /**
+   * 记录 SQL 语句对应的BoundSql对象
+   */
   protected BoundSql boundSql;
 
   protected BaseStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
@@ -60,6 +77,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
     this.objectFactory = configuration.getObjectFactory();
 
     if (boundSql == null) { // issue #435, get the key before calculating the statement
+      // 调用 KeyGenerator.processBefore()方法获取主键
       generateKeys(parameterObject);
       boundSql = mappedStatement.getBoundSql(parameterObject);
     }

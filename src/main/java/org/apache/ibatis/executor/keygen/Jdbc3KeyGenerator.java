@@ -15,16 +15,6 @@
  */
 package org.apache.ibatis.executor.keygen;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.ibatis.binding.BindingException;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.ExecutorException;
@@ -35,7 +25,16 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.*;
+
 /**
+ * 用于取回数据库生成的自增 id
+ * 它对应于 mybatis-config.xml 配置文件 中的 useGeneratedKeys 全局配置 ，
+ * 以及映射配置文件中 SQL 节点(<insert>节点)的 useGeneratedKeys 属性
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
@@ -52,30 +51,39 @@ public class Jdbc3KeyGenerator implements KeyGenerator {
     // do nothing
   }
 
+  //将用户传入的实参 parameter 封装成集合类型 ， 然后传入 processBatch ()方法中处理
   @Override
   public void processAfter(Executor executor, MappedStatement ms, Statement stmt, Object parameter) {
     processBatch(ms, stmt, getParameters(parameter));
   }
 
+  //将 SQL 语句执行后生成的主键记录到用户传递的实参中
   public void processBatch(MappedStatement ms, Statement stmt, Collection<Object> parameters) {
     ResultSet rs = null;
     try {
+      //获取数据库自动生成的主键，如果没有生成主键，则返回结果集为空
       rs = stmt.getGeneratedKeys();
       final Configuration configuration = ms.getConfiguration();
       final TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
+      //获得 keyProperties 属性指定的属性名称 ，它表示主键对应的属性名称
       final String[] keyProperties = ms.getKeyProperties();
+      //获取 ResultSet 的元数据信息
       final ResultSetMetaData rsmd = rs.getMetaData();
       TypeHandler<?>[] typeHandlers = null;
+      //检测数据库生成的主键的列数与 keyProperties属性指定的列数是否匹配
       if (keyProperties != null && rsmd.getColumnCount() >= keyProperties.length) {
         for (Object parameter : parameters) {
           // there should be one row for each statement (also one for each parameter)
+          // parameters 中有多少元素，就对应生成多少个主键
           if (!rs.next()) {
             break;
           }
+          //为用户传入的实参创建相应的 MetaObject 对象
           final MetaObject metaParam = configuration.newMetaObject(parameter);
           if (typeHandlers == null) {
             typeHandlers = getTypeHandlers(typeHandlerRegistry, metaParam, keyProperties, rsmd);
           }
+          //将生成的主键设置到用户传入的参数的对应位置
           populateKeys(rs, metaParam, keyProperties, typeHandlers);
         }
       }
@@ -94,6 +102,7 @@ public class Jdbc3KeyGenerator implements KeyGenerator {
 
   private Collection<Object> getParameters(Object parameter) {
     Collection<Object> parameters = null;
+    //参数为 Collection 类型
     if (parameter instanceof Collection) {
       parameters = (Collection) parameter;
     } else if (parameter instanceof Map) {

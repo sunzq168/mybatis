@@ -15,12 +15,6 @@
  */
 package org.apache.ibatis.executor.statement;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.keygen.Jdbc3KeyGenerator;
@@ -30,6 +24,12 @@ import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
 
 /**
  * @author Clinton Begin
@@ -42,13 +42,18 @@ public class SimpleStatementHandler extends BaseStatementHandler {
 
   @Override
   public int update(Statement statement) throws SQLException {
+    // 获取 SQL 语句
     String sql = boundSql.getSql();
+    // 获取用户传入的实参
     Object parameterObject = boundSql.getParameterObject();
+    // 获取配置的 KeyGenerator 对象
     KeyGenerator keyGenerator = mappedStatement.getKeyGenerator();
     int rows;
     if (keyGenerator instanceof Jdbc3KeyGenerator) {
       statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
+      // 获取受影响的行数
       rows = statement.getUpdateCount();
+      // 将数据库生成的主键添加到 parameterObject 中
       keyGenerator.processAfter(executor, mappedStatement, statement, parameterObject);
     } else if (keyGenerator instanceof SelectKeyGenerator) {
       statement.execute(sql);
@@ -69,9 +74,9 @@ public class SimpleStatementHandler extends BaseStatementHandler {
 
   @Override
   public <E> List<E> query(Statement statement, ResultHandler resultHandler) throws SQLException {
-    String sql = boundSql.getSql();
-    statement.execute(sql);
-    return resultSetHandler.<E>handleResultSets(statement);
+    String sql = boundSql.getSql();// 获取 SQL 语句
+    statement.execute(sql);//调用Statement.executor()方法执行SQL语句
+    return resultSetHandler.<E>handleResultSets(statement);//映射结果集
   }
 
   @Override
@@ -84,6 +89,7 @@ public class SimpleStatementHandler extends BaseStatementHandler {
   @Override
   protected Statement instantiateStatement(Connection connection) throws SQLException {
     if (mappedStatement.getResultSetType() != null) {
+      // 设置结果集是否可以滚动及其游标是否可以上下移动，设置结果集是否可更新
       return connection.createStatement(mappedStatement.getResultSetType().getValue(), ResultSet.CONCUR_READ_ONLY);
     } else {
       return connection.createStatement();

@@ -15,18 +15,24 @@
  */
 package org.apache.ibatis.executor.keygen;
 
-import java.sql.Statement;
-
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.MappedStatement;
+
+import java.sql.Statement;
 
 /**
  * @author Clinton Begin
  */
 public interface KeyGenerator {
 
+  /**
+   * 在执行 insert 之前执行，设置属性 order=”BEFORE”
+   */
   void processBefore(Executor executor, MappedStatement ms, Statement stmt, Object parameter);
 
+  /**
+   * 在执行 insert 之后执行，设置属性 order=”AFTER”
+   */
   void processAfter(Executor executor, MappedStatement ms, Statement stmt, Object parameter);
 
 }

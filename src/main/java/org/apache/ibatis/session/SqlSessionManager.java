@@ -15,6 +15,10 @@
  */
 package org.apache.ibatis.session;
 
+import org.apache.ibatis.cursor.Cursor;
+import org.apache.ibatis.executor.BatchResult;
+import org.apache.ibatis.reflection.ExceptionUtil;
+
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.InvocationHandler;
@@ -25,18 +29,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.ibatis.cursor.Cursor;
-import org.apache.ibatis.executor.BatchResult;
-import org.apache.ibatis.reflection.ExceptionUtil;
-
 /**
  * @author Larry Meadors
  */
 public class SqlSessionManager implements SqlSessionFactory, SqlSession {
-
+  /**
+   * 底层封装的 SqlSessionFactory 对象
+   */
   private final SqlSessionFactory sqlSessionFactory;
+  /**
+   * localSqlSession 中记录的 SqlSession 对象的代理对象，在 SqlSessionManager 初始化时，
+   * 会使用 JDK动态代理的方式为 localSqlSession 创建代理对象
+   */
   private final SqlSession sqlSessionProxy;
-
+  /**
+   * ThreadLocal 变量，记录一个与当前线程绑定的 SqlSession 对象
+   */
   private final ThreadLocal<SqlSession> localSqlSession = new ThreadLocal<SqlSession>();
 
   private SqlSessionManager(SqlSessionFactory sqlSessionFactory) {
@@ -344,16 +352,20 @@ public class SqlSessionManager implements SqlSessionFactory, SqlSession {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+      //获取当前线斗呈绑定的 SqlSession 对象
       final SqlSession sqlSession = SqlSessionManager.this.localSqlSession.get();
       if (sqlSession != null) {
         try {
+          // 调用真正的 SqlSession 对象，完成数据库的相关操作
           return method.invoke(sqlSession, args);
         } catch (Throwable t) {
           throw ExceptionUtil.unwrapThrowable(t);
         }
       } else {
+        //如果当前线程未绑定 SqlSession 对象，则创建新的 SqlSession 对象
         final SqlSession autoSqlSession = openSession();
         try {
+          //通过新建的 SqlSession 对象完成数据库操作
           final Object result = method.invoke(autoSqlSession, args);
           autoSqlSession.commit();
           return result;

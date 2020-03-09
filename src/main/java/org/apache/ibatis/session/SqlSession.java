@@ -15,13 +15,13 @@
  */
 package org.apache.ibatis.session;
 
+import org.apache.ibatis.cursor.Cursor;
+import org.apache.ibatis.executor.BatchResult;
+
 import java.io.Closeable;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.ibatis.cursor.Cursor;
-import org.apache.ibatis.executor.BatchResult;
 
 /**
  * The primary Java interface for working with MyBatis.
@@ -32,6 +32,7 @@ import org.apache.ibatis.executor.BatchResult;
 public interface SqlSession extends Closeable {
 
   /**
+   * 泛型方法，参数表示使用的查询 SQL 语句，返回值为查询的结果对象
    * Retrieve a single row mapped from the statement key
    * @param <T> the returned object type
    * @param statement
@@ -40,6 +41,7 @@ public interface SqlSession extends Closeable {
   <T> T selectOne(String statement);
 
   /**
+   *  第二个参数表示需要用户传入的实参 ，也就是 SQL 语句绑定的实参
    * Retrieve a single row mapped from the statement key and parameter.
    * @param <T> the returned object type
    * @param statement Unique identifier matching the statement to use.
@@ -66,6 +68,7 @@ public interface SqlSession extends Closeable {
   <E> List<E> selectList(String statement, Object parameter);
 
   /**
+   * 第三个参数用于限制解析结果集的范围
    * Retrieve a list of mapped objects from the statement key and parameter,
    * within the specified row bounds.
    * @param <E> the returned list element type
