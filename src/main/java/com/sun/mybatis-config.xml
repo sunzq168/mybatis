@@ -10,23 +10,23 @@
         <property name="password" value="root"/>
     </properties>
     <!--完整的settings-->
-    <settings>
-        <setting name="cacheEnabled" value="true"/>
-        <setting name="lazyLoadingEnabled" value="true"/>
-        <setting name="multipleResultSetsEnabled" value="true"/>
-        <setting name="useColumnLabel" value="true"/>
-        <setting name="useGeneratedKeys" value="false"/>
-        <setting name="autoMappingBehavior" value="PARTIAL"/>
-        <setting name="autoMappingUnknownColumnBehavior" value="WARNING"/>
-        <setting name="defaultExecutorType" value="SIMPLE"/>
-        <setting name="defaultStatementTimeout" value="25"/>
-        <setting name="defaultFetchSize" value="100"/>
-        <setting name="safeRowBoundsEnabled" value="false"/>
-        <setting name="mapUnderscoreToCamelCase" value="false"/>
-        <setting name="localCacheScope" value="SESSION"/>
-        <setting name="jdbcTypeForNull" value="OTHER"/>
-        <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString"/>
-    </settings>
+<!--    <settings>-->
+<!--        <setting name="cacheEnabled" value="true"/>-->
+<!--        <setting name="lazyLoadingEnabled" value="true"/>-->
+<!--        <setting name="multipleResultSetsEnabled" value="true"/>-->
+<!--        <setting name="useColumnLabel" value="true"/>-->
+<!--        <setting name="useGeneratedKeys" value="false"/>-->
+<!--        <setting name="autoMappingBehavior" value="PARTIAL"/>-->
+<!--        <setting name="autoMappingUnknownColumnBehavior" value="WARNING"/>-->
+<!--        <setting name="defaultExecutorType" value="SIMPLE"/>-->
+<!--        <setting name="defaultStatementTimeout" value="25"/>-->
+<!--        <setting name="defaultFetchSize" value="100"/>-->
+<!--        <setting name="safeRowBoundsEnabled" value="false"/>-->
+<!--        <setting name="mapUnderscoreToCamelCase" value="false"/>-->
+<!--        <setting name="localCacheScope" value="SESSION"/>-->
+<!--        <setting name="jdbcTypeForNull" value="OTHER"/>-->
+<!--        <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString"/>-->
+<!--    </settings>-->
 
     <typeAliases>
         <typeAlias type="com.sun.model.Student" alias="Student"/>
@@ -36,13 +36,13 @@
         <typeHandler handler="com.sun.typeHandler.ExampleTypeHandler"/>
     </typeHandlers>
 
-    <objectFactory type="com.sun.objectFactory.ExampleObjectFactory">
-        <property name="someProperty" value="100"/>
-    </objectFactory>
+<!--    <objectFactory type="com.sun.objectFactory.ExampleObjectFactory">-->
+<!--        <property name="someProperty" value="100"/>-->
+<!--    </objectFactory>-->
 
     <plugins>
         <plugin interceptor="com.sun.plugin.ExamplePlugin">
-            <property name="someProperty" value="100"/>
+            <property name="num" value="100"/>
         </plugin>
     </plugins>
 
@@ -66,8 +66,8 @@
 
     <mappers>
         <!--使用package方式配置时,mapper类和对应点xxxMapper.xml要在同一个包下面,否则加载不到xxxMapper.xml-->
-        <package name="com.sun.mapper"/>
-<!--        <mapper resource="com/sun/mapper/StudentMapper.xml"/>-->
+<!--        <package name="com.sun.mapper"/>-->
+        <mapper resource="com/sun/mapper/StudentMapper.xml"/>
     </mappers>
 
 

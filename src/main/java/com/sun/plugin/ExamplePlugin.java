@@ -2,10 +2,7 @@ package com.sun.plugin;
 
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.MappedStatement;
-import org.apache.ibatis.plugin.Interceptor;
-import org.apache.ibatis.plugin.Intercepts;
-import org.apache.ibatis.plugin.Invocation;
-import org.apache.ibatis.plugin.Signature;
+import org.apache.ibatis.plugin.*;
 
 import java.util.Properties;
 
@@ -20,14 +17,16 @@ public class ExamplePlugin implements Interceptor {
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
         // implement pre processing if need
+        System.out.println("before invoke update :" + properties.get("num"));
         Object object = invocation.proceed();
         // implement post processing if need
+        System.out.println(" after invoke update ");
         return object;
     }
 
     @Override
     public Object plugin(Object target) {
-        return null;
+        return Plugin.wrap(target, this);
     }
 
     @Override

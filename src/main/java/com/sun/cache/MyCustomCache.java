@@ -5,6 +5,13 @@ import org.apache.ibatis.cache.Cache;
 import java.util.concurrent.locks.ReadWriteLock;
 
 public class MyCustomCache implements Cache {
+
+    private String id;
+
+    public MyCustomCache(String id) {
+        this.id = id;
+    }
+
     @Override
     public String getId() {
         return null;

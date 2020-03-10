@@ -5,11 +5,11 @@
 
 <mapper namespace="com.sun.mapper.StudentMapper">
     <!--cache-对给定命名空间的缓存配置-->
-    <cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true" type="com.sun.cache.MyCustomCache">
-        <property name="cacheFile" value="/Users/sunzheng/tmp/my-custom-cache.tmp"/>
-    </cache>
+<!--    <cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true" type="com.sun.cache.MyCustomCache">-->
+<!--        <property name="cacheFile" value="/Users/sunzheng/tmp/my-custom-cache.tmp"/>-->
+<!--    </cache>-->
     <!--cache-ref – 对其他命名空间缓存配置的引用-->
-    <cache-ref namespace=""/>
+<!--    <cache-ref namespace=""/>-->
 
     <resultMap type="Student" id="studentMap" >
         <id column="id" property="id"/>
@@ -18,7 +18,7 @@
 
     <!--sql – 可被其他语句引用的可重用语句块。-->
     <sql id="resultSql">
-
+    id, name, age
     </sql>
 
     <select id="selectById" resultType="Student" >
@@ -26,4 +26,8 @@
         <include refid="resultSql"/>
         from Student where id = #{id}
     </select>
+    <update id="updateById">
+        update Student set age=age+2
+        where id = #{id}
+    </update>
 </mapper>

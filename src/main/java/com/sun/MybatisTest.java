@@ -1,7 +1,6 @@
 package com.sun;
 
 import com.sun.mapper.StudentMapper;
-import com.sun.model.Student;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -17,8 +16,10 @@ public class MybatisTest {
         SqlSession sqlSession = sqlSessionfactory.openSession();
         StudentMapper studentMapper = sqlSession.getMapper(StudentMapper.class);
 
-        Student student = studentMapper.selectById(1);
-        System.out.println(student);
+        //Student student = studentMapper.selectById(1);
+        //System.out.println(student);
+
+        studentMapper.updateById(1);
 
         sqlSession.commit();
         sqlSession.close();
