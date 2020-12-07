@@ -6,7 +6,6 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import javax.sound.midi.SoundbankResource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -30,17 +29,17 @@ public class ParseXml {
         builder.setErrorHandler(new ErrorHandler() {
             @Override
             public void warning(SAXParseException exception) throws SAXException {
-                System.out.println("WARN" + exception.getMessage());
+                System.out.println("WARN：" + exception.getMessage());
             }
 
             @Override
             public void error(SAXParseException exception) throws SAXException {
-                System.out.println("error" + exception.getMessage());
+                System.out.println("error：" + exception.getMessage());
             }
 
             @Override
             public void fatalError(SAXParseException exception) throws SAXException {
-                System.out.println("fatalError" + exception.getMessage());
+                System.out.println("fatalError：" + exception.getMessage());
             }
         });
 

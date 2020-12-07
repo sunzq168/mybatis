@@ -15,23 +15,20 @@
  */
 package org.apache.ibatis.parsing;
 
+import org.w3c.dom.CharacterData;
+import org.w3c.dom.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import org.w3c.dom.CharacterData;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * @author Clinton Begin
  */
 public class XNode {
 
-  private final Node node;//org.w3c.dorn.Node 对象
+  private final Node node;//org.w3c.dom.Node 对象
   private final String name;// Node 节点名称
   private final String body;// 节点的内容
   private final Properties attributes;//节点属性集合
@@ -362,8 +359,8 @@ public class XNode {
 
   private String parseBody(Node node) {
     String data = getBodyData(node);
-    if (data == null) {
-      NodeList children = node.getChildNodes();
+    if (data == null) {//当前节点不是文本节点
+      NodeList children = node.getChildNodes();//处理子节点
       for (int i = 0; i < children.getLength(); i++) {
         Node child = children.item(i);
         data = getBodyData(child);

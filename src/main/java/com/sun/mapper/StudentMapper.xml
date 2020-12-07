@@ -10,9 +10,10 @@
 <!--    </cache>-->
     <!--cache-ref – 对其他命名空间缓存配置的引用-->
 <!--    <cache-ref namespace=""/>-->
-
+    <!-- 定义映射规则 -->
     <resultMap type="Student" id="studentMap" >
         <id column="id" property="id"/>
+        <!-- 属性映射 -->
         <result column="name" property="name"/>
     </resultMap>
 

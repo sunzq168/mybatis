@@ -9,6 +9,10 @@
         <property name="username" value="root"/>
         <property name="password" value="root"/>
     </properties>
+    <settings>
+        <setting name="cacheEnabled" value="true"/>
+        <setting name="logImpl" value="STDOUT_LOGGING" />
+    </settings>
     <!--完整的settings-->
 <!--    <settings>-->
 <!--        <setting name="cacheEnabled" value="true"/>-->
@@ -28,6 +32,7 @@
 <!--        <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString"/>-->
 <!--    </settings>-->
 
+    <!--别名信息-->
     <typeAliases>
         <typeAlias type="com.sun.model.Student" alias="Student"/>
     </typeAliases>
@@ -50,7 +55,9 @@
 
     <environments default="development">
         <environment id="development">
+            <!-- 配置事务管理器的类型-->
             <transactionManager type="JDBC"/>
+            <!-- 配置数据源的类型，以及数据库连接的相关信息 -->
             <dataSource type="POOLED">
                 <property name="driver" value="${driver}"/>
                 <property name="url" value="${url}"/>
@@ -64,6 +71,7 @@
         <property name="MySQL" value="mysql"/>
     </databaseIdProvider>
 
+    <!-- 配置映射配置文件的位置 -->
     <mappers>
         <!--使用package方式配置时,mapper类和对应点xxxMapper.xml要在同一个包下面,否则加载不到xxxMapper.xml-->
 <!--        <package name="com.sun.mapper"/>-->
