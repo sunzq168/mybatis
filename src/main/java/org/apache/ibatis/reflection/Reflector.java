@@ -15,28 +15,15 @@
  */
 package org.apache.ibatis.reflection;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.ReflectPermission;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.ibatis.reflection.invoker.GetFieldInvoker;
 import org.apache.ibatis.reflection.invoker.Invoker;
 import org.apache.ibatis.reflection.invoker.MethodInvoker;
 import org.apache.ibatis.reflection.invoker.SetFieldInvoker;
 import org.apache.ibatis.reflection.property.PropertyNamer;
+
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * This class represents a cached set of class definition information that
@@ -67,12 +54,18 @@ public class Reflector {
 
   public Reflector(Class<?> clazz) {
     type = clazz;
+    // 查找 clazz 的默认构造方法(无参构造方法)， 具体实现是通过反射遥历所有构造方法，
     addDefaultConstructor(clazz);
+    // 处理 clazz 中的 getter 方法，填充 getMethods 集合和 getTypes 集合
     addGetMethods(clazz);
+    // 处理 clazz 中的 setter 方法，填充 setMethods 集合和 setTypes 集合
     addSetMethods(clazz);
+    // 处理没有 getterI setter 方法的字段
     addFields(clazz);
+    // 根据 getMethods/setMethods 集合 ，初始化可读/写属性的名称集合
     readablePropertyNames = getMethods.keySet().toArray(new String[getMethods.keySet().size()]);
     writeablePropertyNames = setMethods.keySet().toArray(new String[setMethods.keySet().size()]);
+    // 初始化 caseinsensitivePropertyMap 集合，其中记录了所有大写格式的属性名称
     for (String propName : readablePropertyNames) {
       caseInsensitivePropertyMap.put(propName.toUpperCase(Locale.ENGLISH), propName);
     }
@@ -105,6 +98,7 @@ public class Reflector {
     Map<String, List<Method>> conflictingGetters = new HashMap<String, List<Method>>();
     // 步骤 l: 获取指定类以及其父类和接口中定义的方法
     Method[] methods = getClassMethods(cls);
+
     //步骤 2:按照 JavaBean 规范查找 getter 方 法，并记 录到 conflictingGetters 集合中
     for (Method method : methods) {
       if (method.getParameterTypes().length > 0) {
@@ -115,7 +109,7 @@ public class Reflector {
           || (name.startsWith("is") && name.length() > 2)) {
         //按照 JavaBean 的规范，获取对应 的属性名称
         name = PropertyNamer.methodToProperty(name);
-        //将属性名与 getter 方法的对反关系记录圭1] conflictingGetters 集合中
+        //将属性名与 getter 方法的对反关系记录到 conflictingGetters 集合中
         addMethodConflict(conflictingGetters, name, method);
       }
     }
@@ -161,8 +155,11 @@ public class Reflector {
   private void addGetMethod(String name, Method method) {
     //检测属性名是否合法
     if (isValidPropertyName(name)) {
+      // 将属性名以及对应的 MethodInvoker 对象添加到 getMethods 集合中
       getMethods.put(name, new MethodInvoker(method));
+      // 获取返回值的 Type,
       Type returnType = TypeParameterResolver.resolveReturnType(method, type);
+      // 将属性名称及其 getter 方法的返回值类型添加到 getTypes 集合 中保存，
       getTypes.put(name, typeToClass(returnType));
     }
   }
@@ -358,14 +355,14 @@ public class Reflector {
       if (!currentMethod.isBridge()) {
         /**通过 Reflector.getSignature () 方法得到的方法签名是:返回值类型#方法名称:参数类型列表 。
          * 例如， Reflector.getSignature(Method)方法的唯一 签名是:
-         java.lang.String#getSignature:ava.lang.reflect.Method
+         java.lang.String#getSignature:java.lang.reflect.Method
         通过 Reflector.getSignature()方法得到的方法签名是全局唯一的，可以作为该方法的唯一标识
         */
         String signature = getSignature(currentMethod);
         // check to see if the method is already known
         // if it is known, then an extended class must have
         // overridden a method
-        //检测是否在子类中已经添加过该方法，如果在子类中已经添加过,元须再向uniqueMethods 集合中添加该方法了
+        //检测是否在子类中已经添加过该方法，如果在子类中已经添加过,无须再向uniqueMethods 集合中添加该方法了
         if (!uniqueMethods.containsKey(signature)) {
           if (canAccessPrivateMethods()) {
             try {
